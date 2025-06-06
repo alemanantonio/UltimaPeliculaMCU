@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto PHP: Próxima Película del MCU</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        :root {
+            --background: #000000;
+            --surface: rgba(255, 255, 255, 0.08);
+            --primary: rgba(255, 255, 255, 0.9);
+            --secondary: rgba(255, 255, 255, 0.6);
+            --accent: #0A84FF;
+            --code-bg: #1E1E1E;
+            --code-text: #D4D4D4;
+            --code-comment: #6A9955;
+            --code-keyword: #569CD6;
+            --code-string: #CE9178;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Content Container */
+        .content {
+            padding: 2rem 1rem 6rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Section Header */
+        .section-header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--surface);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* Project Cards */
+        .project-card {
+            background: var(--surface);
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .project-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-description {
+            color: var(--secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--code-text);
+            position: relative;
+        }
+
+        .code-block pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-comment {
+            color: var(--code-comment);
+            font-style: italic;
+        }
+
+        .code-keyword {
+            color: var(--code-keyword);
+        }
+
+        .code-string {
+            color: var(--code-string);
+        }
+
+        .code-function {
+            color: #DCDCAA;
+        }
+
+        .code-var {
+            color: #9CDCFE;
+        }
+
+        /* Explanation Sections */
+        .explanation-section {
+            margin: 1.5rem 0;
+        }
+
+        .explanation-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .explanation-content {
+            color: var(--secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        /* Demo Preview */
+        .demo-preview {
+            width: 100%;
+            border-radius: 14px;
+            margin: 1rem 0;
+            border: 1px solid var(--surface);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1rem 1rem 6rem;
+            }
+        }
+
+        header {
+            background: var(--surface);
+            position: sticky;
+            top: 0;
+            padding: 1rem 0;
+            border-bottom: 1px solid #333;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        header.small {
+            height: 60px; 
+            padding: 0.5rem 0; 
+            background: linear-gradient(var(--background), var(--surface));
+        }
+
+        .nav-menu ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu a {
+            color: var(--primary);
+            font-weight: bold;
+            transition: color 0.3s;
+            padding: 0.5rem;
+            display: block;
+        }
+
+        .nav-menu a:hover {
+            color: var(--accent);
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column; /* Alinea los recuadros en una columna */
+            align-items: center; /* Centra los recuadros horizontalmente */
+            padding: 2rem 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: var(--surface);
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            width: 100%; /* Asegura que los recuadros ocupen el ancho máximo permitido */
+            max-width: 600px; /* Limita el ancho máximo de los recuadros */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Opcional: agrega sombra para destacar los recuadros */
+        }
+    </style>
+</head>
+<body>
+
+    <header id="mainHeader">
+        <nav class="nav-menu">
+          <ul>
+            <li><a href="../../../index.html#home">Inicio</a></li>
+            <li><a href="../../../index.html#about">Sobre mí</a></li>
+            <li><a href="../../../index.html#skills">Habilidades</a></li>
+            <li><a href="../../../index.html#projects">Proyectos</a></li>
+            <li><a href="../../../index.html#contact">Contacto</a></li>
+          </ul>
+        </nav>
+    </header>
+
+    <div class="content">
+        <div class="section-header">
+            <h1 class="section-title">Próxima Película del MCU</h1>
+            <p class="text-secondary">Proyecto PHP que consume una API pública</p>
+        </div>
+
+        <div class="project-card">
+            <h2 class="project-title">Descripción del Proyecto</h2>
+            <p class="project-description">
+                Este proyecto PHP consulta la API pública de "When is the next MCU film" para obtener información sobre 
+                la próxima película del Universo Cinemático de Marvel, incluyendo título, fecha de estreno, póster y días restantes.
+            </p>
+            
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Marvel_Logo.svg/2560px-Marvel_Logo.svg.png" alt="Marvel Logo" style="width: 100%; max-width: 300px; margin: 1rem auto; display: block;">
+            
+        </div>
+
+        <div class="project-card">
+            <h2 class="project-title">Código PHP</h2>
+            <p class="project-description">
+                A continuación se muestra el código PHP que realiza la consulta a la API y procesa los datos:
+            </p>
+            
+            <div class="code-block">
+                <pre><code><span class="code-comment"><?php
+<span class="code-comment">// URL de la API que proporciona información sobre la próxima película del MCU</span>
+<span class="code-keyword">const</span> API_URL = <span class="code-string">"https://whenisthenextmcufilm.com/api"</span>;
+
+<span class="code-comment">// Inicializar una nueva sesión cURL</span>
+$ch = <span class="code-function">curl_init</span>(API_URL);
+
+<span class="code-comment">// Configurar cURL para que devuelva el resultado como string</span>
+<span class="code-function">curl_setopt</span>($ch, CURLOPT_RETURNTRANSFER, <span class="code-keyword">true</span>);
+
+<span class="code-comment">// Ejecutar la petición y guardar el resultado</span>
+$res = <span class="code-function">curl_exec</span>($ch);
+
+<span class="code-comment">// Decodificar la respuesta JSON a un array asociativo</span>
+$data = <span class="code-function">json_decode</span>($res, <span class="code-keyword">true</span>);
+
+<span class="code-comment">// Cerrar la sesión cURL</span>
+<span class="code-function">curl_close</span>($ch);
+?></span></code></pre>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <h2 class="project-title">Explicación del Código</h2>
+            
+            <div class="explanation-section">
+                <h3 class="explanation-title">¿Por qué usar cURL?</h3>
+                <p class="explanation-content">
+                    cURL es una librería que permite hacer peticiones HTTP desde PHP. Es la forma más eficiente y flexible 
+                    de consumir APIs externas, ya que permite configurar cabeceras, métodos HTTP y manejar respuestas complejas.
+                </p>
+            </div>
+            
+            <div class="explanation-section">
+                <h3 class="explanation-title">Proceso de la API</h3>
+                <p class="explanation-content">
+                    La API devuelve un objeto JSON con toda la información necesaria. Usamos <code>json_decode()</code> para 
+                    convertirlo en un array asociativo de PHP que podemos manipular fácilmente.
+                </p>
+            </div>
+            
+            <div class="explanation-section">
+                <h3 class="explanation-title">Estructura de los datos</h3>
+                <p class="explanation-content">
+                    La respuesta de la API contiene estos campos principales:
+                </p>
+                <ul style="color: var(--secondary); margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><code>title</code>: Nombre de la próxima película</li>
+                    <li><code>release_date</code>: Fecha de estreno (formato YYYY-MM-DD)</li>
+                    <li><code>days_until</code>: Días restantes para el estreno</li>
+                    <li><code>poster_url</code>: URL del póster oficial</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <h2 class="project-title">Implementación en el Frontend</h2>
+            <p class="project-description">
+                Los datos obtenidos del API se muestran en una interfaz HTML con estilos modernos y responsive:
+            </p>
+            
+            <div class="code-block">
+                <pre><code><span class="code-comment">&lt;!-- Ejemplo de cómo se muestran los datos en HTML --&gt;</span>
+&lt;img src=<span class="code-string">"&lt;?= $data["poster_url"]; ?&gt;"</span> alt=<span class="code-string">"&lt;?= $data["title"]; ?&gt; Poster"</span> class=<span class="code-string">"movie-poster"</span>&gt;
+
+&lt;h1 class=<span class="code-string">"movie-title"</span>&gt;&lt;?= $data["title"]; ?&gt;&lt;/h1&gt;
+
+&lt;p class=<span class="code-string">"movie-release"</span>&gt;Fecha de Estreno: &lt;?= $data["release_date"]; ?&gt;&lt;/p&gt;
+
+&lt;div class=<span class="code-string">"countdown"</span>&gt;Se estrena en &lt;?= $data["days_until"]; ?&gt; días&lt;/div&gt;</code></pre>
+            </div>
+            
+            <div class="explanation-section">
+                <h3 class="explanation-title">Características del diseño</h3>
+                <p class="explanation-content">
+                    La interfaz incluye:
+                </p>
+                <ul style="color: var(--secondary); margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Diseño responsive que se adapta a móviles</li>
+                    <li>Modo oscuro/claro según preferencias del sistema</li>
+                    <li>Efectos hover interactivos</li>
+                    <li>Animaciones suaves con transiciones CSS</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <h2 class="project-title">Posibles Mejoras</h2>
+            
+            <div class="explanation-section">
+                <h3 class="explanation-title">1. Cache de la respuesta</h3>
+                <p class="explanation-content">
+                    Para reducir llamadas a la API, podríamos guardar la respuesta en un archivo JSON local y 
+                    actualizarlo solo una vez al día.
+                </p>
+            </div>
+            
+            <div class="explanation-section">
+                <h3 class="explanation-title">2. Manejo de errores</h3>
+                <p class="explanation-content">
+                    Añadir verificación de errores en la petición cURL y un mensaje alternativo si la API falla.
+                </p>
+            </div>
+            
+            <div class="explanation-section">
+                <h3 class="explanation-title">3. Internacionalización</h3>
+                <p class="explanation-content">
+                    Traducir la interfaz a diferentes idiomas usando arrays asociativos de PHP.
+                </p>
+            </div>
+        </div>
+    </div>
+
+   <script src="../../script.js"></script>
+
+</body>
+</html>
